@@ -1,0 +1,56 @@
+#!/bin/bash
+# Usage: where-symbol [--root DIR] <name> <repo> [repo...]
+# One line per checkout of each repo (main checkout and its git worktrees): folder,
+# branch and number of files containing <name> as a whole word.
+# A repo that is not a git checkout is an error, not a zero.
+# <repo> is a path, or a folder name under the root. The root is --root, else
+# $FRESH_EYES_ROOT, else the nearest parent folder holding .claude/fresh-eyes.md,
+# else the current folder.
+
+usage() { echo "usage: where-symbol [--root DIR] <name> <repo> [repo...]" >&2; exit 2; }
+
+root=${FRESH_EYES_ROOT:-}
+if [ "$1" = "--root" ]; then
+  [ $# -ge 2 ] || usage
+  root=$2; shift 2
+fi
+name=$1
+[ -n "$name" ] && [ $# -ge 2 ] || usage
+shift
+
+if [ -z "$root" ]; then
+  d=$PWD
+  while :; do
+    if [ -f "$d/.claude/fresh-eyes.md" ]; then root=$d; break; fi
+    [ "$d" = "/" ] && break
+    d=$(dirname "$d")
+  done
+  [ -z "$root" ] && root=$PWD
+fi
+
+rc=0
+for repo in "$@"; do
+  case "$repo" in /*) path=$repo ;; *) path=$root/$repo ;; esac
+  # The path must be a checkout's root: a folder inside one would report the enclosing repo.
+  if ! prefix=$(git -C "$path" rev-parse --show-prefix 2>/dev/null) || [ -n "$prefix" ] ||
+    ! list=$(git -C "$path" worktree list --porcelain 2>/dev/null); then
+    echo "$repo: no git checkout at $path" >&2
+    rc=2
+    continue
+  fi
+  while IFS= read -r line; do
+    case "$line" in "worktree "*) d=${line#worktree } ;; *) continue ;; esac
+    [ -d "$d" ] || continue
+    branch=$(git -C "$d" branch --show-current 2>&1)
+    # git grep, not rg: rg can be a shell function in agent sessions, not a binary a script can call.
+    out=$(git -C "$d" grep -lwF --untracked -- "$name"); grc=$?
+    if [ $grc -gt 1 ]; then
+      echo "$(basename "$d"): search failed (git grep exit $grc)" >&2
+      rc=2
+      continue
+    fi
+    if [ -n "$out" ]; then files=$(printf '%s\n' "$out" | wc -l | tr -d ' '); else files=0; fi
+    printf '%-30s %-50s %s files\n' "$(basename "$d")" "${branch:-(detached)}" "$files"
+  done <<<"$list"
+done
+exit $rc

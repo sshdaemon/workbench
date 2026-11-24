@@ -1,0 +1,8 @@
+{
+  "name": "fresh-eyes",
+  "version": "0.1.0",
+  "description": "Review loop with a fresh-context reviewer, a decisions ledger and a commit gate, plus a read-only code search agent.",
+  "author": {
+    "name": "sshdaemon"
+  }
+}
