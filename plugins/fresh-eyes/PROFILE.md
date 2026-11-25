@@ -66,6 +66,18 @@ What each report's fields mean, how to accept a finding in the tool, how to conf
 
 - Each repo's `CLAUDE.md`
 - Comments: few, one line, only for a non-obvious why
+
+## QA
+
+- Ticket tracker: how to read a ticket (tools or command), with its comments, attachments and images; how to download an attachment or image to a file, when the tracker allows it; how to upload an image and post a comment
+- Changes: how to find a ticket's pull requests (for example `gh pr list --search <ticket> --state all` in each repo)
+- QA ledger: `<feature folder>/<name>.qa.md`; case file: `<name>-cases.json` next to it
+- UI test engine: its MCP server, the folder its commands run in, its read command (`npm run -s read -- …`), where a run's directory is (for example `~/.witness/runs/<runId>`), the command that starts its worker for a scratch MCP client, and its docs. The loop is written against the witness engine's steps runner, MCP tools and commands (`steps`, `qa-md`, `promote`, `read`); another engine needs the same ones
+- Engine skills: the skill to test with and the skill to add a missing tool, each with the path of its `SKILL.md`
+- Environments: which the loop may use, how it picks one, which are never used
+- Actors: the test accounts' roles
+- Results comment: where the layout for posting results on a ticket is
+- Viewer: how to start it and the link to a ticket's page
 ```
 
 ## What reads what
@@ -81,3 +93,4 @@ What each report's fields mean, how to accept a finding in the tool, how to conf
 | Code search | code-search |
 | Commits | review-loop |
 | Conventions | review-loop, code-reviewer |
+| QA | qa-loop, qa-validator |

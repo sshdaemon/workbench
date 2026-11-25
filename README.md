@@ -4,7 +4,7 @@ Engineering tools and skills for Claude Code, packaged as plugins. Install only 
 
 | Plugin | What it gives |
 |---|---|
-| [fresh-eyes](plugins/fresh-eyes/README.md) | Review loop with a fresh-context reviewer, a decisions ledger and a commit gate, plus a read-only code search agent |
+| [fresh-eyes](plugins/fresh-eyes/README.md) | Review and QA loops with fresh-context checkers, a decisions ledger and a commit gate, plus a read-only code search agent |
 
 ## Install
 

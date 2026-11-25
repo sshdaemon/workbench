@@ -8,6 +8,8 @@ Checks on your work done from a clean context, so the checker can't lean on what
 |---|---|---|
 | `review-loop` | skill | Runs review and fix rounds on a feature branch until a round comes back clean, then approves the staged diff for commit |
 | `code-reviewer` | agent | Reviews the branch with no prior context and returns verified findings as YAML. Never edits code |
+| `qa-loop` | skill | QAs a ticket through the real UI: cases from the ticket and its diffs, a fresh check of the cases, a run with the project's UI test engine, a fresh check of every verdict, then the viewer link |
+| `qa-validator` | agent | Challenges a case list before testing and every verdict after, from the ticket copy, the code and the run's evidence. Never edits, runs or posts |
 | `code-search` | agent | Answers "where is X" and "who calls Y" across repos and worktrees with file:line hits and the chain to each entry point |
 | commit gate | hook | Denies `git commit` in a covered repo unless the review loop approved exactly the staged diff |
 | `where-symbol` | command | Prints, per checkout of a repo, its branch and how many files contain a name |
@@ -26,6 +28,16 @@ The gate reads the command before it runs and approves the index as it is at tha
 The gate reads text, not a parsed shell command. In a covered folder it also denies a command that only mentions the words, such as `echo "run git commit later"`, because it can't tell that from `bash -c "git add -A && git commit"`. Reword the text or pass it from a file.
 
 `tests/commit-gate.sh` runs the gate against throwaway repos.
+
+## How the QA loop works
+
+1. The loop copies the ticket into a QA ledger, reads the pull requests' diffs and writes the cases into a case file.
+2. A fresh validator challenges the cases: missing edge cases, expected results a broken feature would still pass, cases that can't prove their claim.
+3. The UI test engine runs the case file, and the run waits for the session's verdicts.
+4. A fresh validator checks every verdict against the steps and screenshots the engine recorded, reading them through the engine's read command.
+5. The loop finishes the run and hands over the viewer link. It posts results on the ticket only when asked.
+
+It is written against the witness UI test engine: its steps runner (case files, lanes, a verdict file), its MCP tools (sessions, cases, evidence, cleanup) and its `qa-md`, `promote` and `read` commands. Another engine needs the same ones. The project's profile needs a "QA" section.
 
 ## Setting up a project
 

@@ -7,7 +7,7 @@
     {
       "name": "fresh-eyes",
       "source": "./plugins/fresh-eyes",
-      "description": "Review loop with a fresh-context reviewer, a decisions ledger and a commit gate, plus a read-only code search agent."
+      "description": "Review and QA loops with fresh-context checkers, a decisions ledger and a commit gate, plus a read-only code search agent."
     }
   ],
   "metadata": {
