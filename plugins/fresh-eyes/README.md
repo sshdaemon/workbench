@@ -37,7 +37,7 @@ The gate reads text, not a parsed shell command. In a covered folder it also den
 4. A fresh validator checks every verdict against the steps and screenshots the engine recorded, reading them through the engine's read command.
 5. The loop finishes the run and hands over the viewer link. It posts results on the ticket only when asked.
 
-It is written against the witness UI test engine: its steps runner (case files, lanes, a verdict file), its MCP tools (sessions, cases, evidence, cleanup) and its `qa-md`, `promote` and `read` commands. Another engine needs the same ones. The project's profile needs a "QA" section.
+It is written against the [witness](https://github.com/sshdaemon/witness) UI test engine: its steps runner (case files, lanes, a verdict file), its MCP tools (sessions, cases, evidence, cleanup) and its `qa-md`, `promote` and `read` commands. Another engine needs the same ones. The project's profile needs a "QA" section.
 
 ## Setting up a project
 

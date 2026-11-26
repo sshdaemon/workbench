@@ -19,3 +19,7 @@ claude plugin install fresh-eyes@workbench
 ```
 
 From a local checkout, pass its path instead of `sshdaemon/workbench`.
+
+## Licence
+
+MIT
