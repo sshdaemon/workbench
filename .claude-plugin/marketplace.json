@@ -8,6 +8,11 @@
       "name": "fresh-eyes",
       "source": "./plugins/fresh-eyes",
       "description": "Review and QA loops with fresh-context checkers, a decisions ledger and a commit gate, plus a read-only code search agent."
+    },
+    {
+      "name": "no-sleep",
+      "source": "./plugins/no-sleep",
+      "description": "Stops Claude from waiting by sleeping or polling in the foreground, and points it at background commands and Monitor instead."
     }
   ],
   "metadata": {

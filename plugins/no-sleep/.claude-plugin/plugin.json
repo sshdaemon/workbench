@@ -1,0 +1,8 @@
+{
+  "name": "no-sleep",
+  "version": "0.1.0",
+  "description": "Stops Claude from waiting by sleeping or polling in the foreground, and points it at background commands and Monitor instead.",
+  "author": {
+    "name": "sshdaemon"
+  }
+}
