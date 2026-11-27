@@ -45,6 +45,7 @@ Never run: `npm install`, migrations, anything that writes to a database
 
 Reports go under `~/.cache/<project>/review/<feature>/round-<N>/<repo>/`.
 What each report's fields mean, how to accept a finding in the tool, how to confirm a mutation kill, and what to do when a tool is not installed go here too.
+For model mutants (off unless the review loop gets `--model-mutants`), a mutation tool that takes authored mutants also needs: the propose command and where it writes the placeholders file, the command that checks an answers file without running it, the run command, how to confirm a model kill when no further round will run, the author's budget (for example "about 30, mostly on files the unit tests don't reach"), and which lanes may run.
 
 ## Review focus
 
@@ -112,6 +113,14 @@ Run them in this order. A tool without its `node_modules` is not installed: say 
 4. Accept a survivor or untested file left as is: `node <tools>/weakspot-ts/bin/weakspot.js accept <id> --repo <repo path> --reason "<ledger id>: <reason>"`; `node <tools>/weakspot-ts/bin/weakspot.js accept <id> --repo <repo path> --revoke` reverses it.
 5. Skip it for an already merged feature and tell the reviewer there is no mutation report.
 6. Reading it: each finding is a mutant of changed code no test noticed (`weakAssertion`, `noCoverage`, `static`) or a changed file no test reaches (`untested`), with the lane that ran it.
+7. Model mutants (only with `--model-mutants`):
+   - Propose, after that round's `diff` has finished: `node <tools>/weakspot-ts/bin/weakspot.js propose --changes <dir>/changes.json --out <dir>/weakspot --quiet`. It writes `<dir>/weakspot/placeholders.json` and runs no tests.
+   - Author budget: about 30 mutants; add a note on where to spend them, for example on files the unit lane doesn't reach. Answers go to `<dir>/weakspot/answers.json`.
+   - Check: `node <tools>/weakspot-ts/bin/weakspot.js run --mutants <dir>/weakspot/answers.json --check --quiet`. Exit 1 lists rejected answers in `<dir>/weakspot/check-rejected.json`; exit 2 means the file itself is unreadable, with the reason on stderr.
+   - Run: `node <tools>/weakspot-ts/bin/weakspot.js run --mutants <dir>/weakspot/answers.json --quiet`, in the background. Results merge into the round's `report.json`.
+   - Lanes: propose takes the same lanes as `diff`; say here whether lanes that write to shared test databases may run.
+   - Confirm a model kill when no further round will run: put the fixed survivors' entries from `<dir>/weakspot/mutants.json` in a scratch answers file, strip the cached mutants from the placeholders (`jq '.placeholders |= map(del(.cached))' <dir>/weakspot/placeholders.json > <scratch>/placeholders.json`), and run `node <tools>/weakspot-ts/bin/weakspot.js run --mutants <scratch answers> --placeholders <scratch>/placeholders.json --out <scratch dir> --quiet`.
+   - Accept a model survivor like any other, by its `<file>#model#<hash>` id.
 
 **shared-code guard**
 
@@ -140,7 +149,7 @@ The rest of the QA section (tracker, environments, actors, results comment) is t
 | Repos | review-loop, code-reviewer, code-search, `where-symbol` (for the root folder) |
 | Docs | review-loop |
 | Checks | review-loop, code-reviewer |
-| Machine checks | review-loop, code-reviewer (report field meanings) |
+| Machine checks | review-loop (incl. model mutants), code-reviewer (report field meanings) |
 | Review focus | code-reviewer |
 | Code search | code-search |
 | Commits | review-loop |

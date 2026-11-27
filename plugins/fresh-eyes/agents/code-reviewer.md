@@ -48,6 +48,7 @@ A mutation report lists mutants of changed code that no test noticed, and change
 - Group survivors on one function or rule into one finding, listing the survivor ids in `evidence`.
 - Many uncovered survivors in one file that another test lane covers usually mean the unit lane never reaches it; report that once, as a `tests` finding on the file, not per mutant.
 - A ledger entry whose `where` holds the survivor id, or `<file>#untested`, settles that finding.
+- Model mutants (the report marks them, for example with a `model` mutator) were written from the spec and the ledger, and the claim carries the author's reading of what breaks. Judge the mistake, not the reading: drop one no realistic input can tell apart from the original. When the lane that ran it finds specs by a path convention, look for a spec outside the matching folder that asserts the behaviour the mutant breaks. If one does, the survivor is a spec-discovery gap, not a missing test: report it once as a medium `tests` finding naming that spec, with `needs_decision: true` and the options of mapping the lane's coverage (if the tool can) or accepting the survivor.
 
 ## Shared-code findings
 
