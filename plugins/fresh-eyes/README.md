@@ -8,6 +8,7 @@ Checks on your work done from a clean context, so the checker can't lean on what
 |---|---|---|
 | `review-loop` | skill | Runs review and fix rounds on a feature branch until a round comes back clean, then approves the staged diff for commit |
 | `code-reviewer` | agent | Reviews the branch with no prior context and returns verified findings as YAML. Never edits code |
+| `mutant-author` | agent | Writes model mutants (plausible mistakes on the changed lines, aimed at the spec's rules) for the review loop's opt-in model-mutant step |
 | `qa-loop` | skill | QAs a ticket through the real UI: cases from the ticket and its diffs, a fresh check of the cases, a run with the project's UI test engine, a fresh check of every verdict, then the viewer link |
 | `qa-validator` | agent | Challenges a case list before testing and every verdict after, from the ticket copy, the code and the run's evidence. Never edits, runs or posts |
 | `code-search` | agent | Answers "where is X" and "who calls Y" across repos and worktrees with file:line hits and the chain to each entry point |
@@ -20,6 +21,8 @@ Checks on your work done from a clean context, so the checker can't lean on what
 2. Clear findings are fixed straight away. Judgement calls are put to you as questions.
 3. Every decision goes into the feature's ledger, with its reason. A later round, or a later review, does not raise a settled finding again unless the code changed enough to break that reason.
 4. When a round is clean, the loop writes an approval for the staged diff and commits. Any change to the staged diff afterwards needs a new approval.
+
+With `--model-mutants`, from round 2 on the loop also runs model mutants where the profile describes them: a fresh `mutant-author` writes mistakes aimed at the spec's and the ledger's rules for the mutation tool's placeholders, the tool checks the answers, then runs them, and their survivors reach the reviewer with the other mutation findings. A clean round 1 doesn't end the loop, so they always run. Later rounds rerun the cached mutants only, which confirms kills without new authoring. It is opt-in because model mutants can run slow test lanes, such as end-to-end suites with their own databases.
 
 To commit without a review, prefix the command with `SKIP_REVIEW_LOOP=1`.
 
